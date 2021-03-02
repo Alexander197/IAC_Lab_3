@@ -29,6 +29,8 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
+#define false 0
+#define true 1
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */

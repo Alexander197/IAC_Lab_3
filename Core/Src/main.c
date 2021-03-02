@@ -25,6 +25,7 @@ void SystemClock_Config(void);
 static void MX_NVIC_Init(void);
 
 uint8_t numberOfLeds = 0;
+_Bool isChanged = true;
 
 uint16_t leds[4] = {
 	GPIO_PIN_12,
@@ -34,10 +35,14 @@ uint16_t leds[4] = {
 };
 void updateLeds()
 {
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_All, GPIO_PIN_SET);
-  for(size_t i = 0; i < numberOfLeds; i++)
+  if(isChanged)
   {
-	HAL_GPIO_WritePin(GPIOB, leds[i], GPIO_PIN_RESET);
+	   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_All, GPIO_PIN_SET);
+	   for(size_t i = 0; i < numberOfLeds; i++)
+	   {
+	 	HAL_GPIO_WritePin(GPIOB, leds[i], GPIO_PIN_RESET);
+	   }
+	   isChanged = false;
   }
 }
 
@@ -50,13 +55,13 @@ int main(void)
 
 
   MX_NVIC_Init();
-  updateLeds();
+  //updateLeds();
 
   while (1)
   {
-	  HAL_Delay(100);
+	updateLeds();
+	HAL_Delay(10);
   }
-
 }
 
 
@@ -100,16 +105,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		case GPIO_PIN_11:
 		{
 			numberOfLeds = (numberOfLeds <= 0) ? 0 : numberOfLeds - 1;
-			updateLeds();
 			break;
 		}
 		case GPIO_PIN_12:
 		{
 			numberOfLeds = (numberOfLeds >= 4) ? 4 : numberOfLeds + 1;
-			updateLeds();
 			break;
 		}
 	};
+	isChanged = true;
 }
 
 void Error_Handler(void)
